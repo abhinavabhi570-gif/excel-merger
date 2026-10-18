@@ -3,39 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>File Merger Suite</title>
+  <title>Pro File Merger</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
-  <div class="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full border border-slate-200">
+<body class="bg-gray-950 min-h-screen flex items-center justify-center p-4 selection:bg-purple-500 selection:text-white">
+  
+  <!-- Glowing Background Aura -->
+  <div class="relative max-w-md w-full">
+    <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-40 animate-pulse"></div>
     
-    <!-- Navigation Tabs -->
-    <div class="flex border-b border-slate-200 mb-6">
-      <button id="excelTab" onclick="switchMode('excel')" class="flex-1 py-2 font-semibold text-sm border-b-2 border-blue-600 text-blue-600 focus:outline-none transition">
-        Excel Merger
-      </button>
-      <button id="pdfTab" onclick="switchMode('pdf')" class="flex-1 py-2 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-none transition">
-        PDF Merger
-      </button>
-    </div>
-
-    <h1 id="title" class="text-2xl font-bold text-slate-800 mb-1">Excel Sheet Merger</h1>
-    <p id="subtitle" class="text-xs text-slate-500 mb-5">Select multiple Excel (.xlsx) files to combine them into one.</p>
-
-    <form id="uploadForm" class="space-y-4">
-      <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-blue-500 transition cursor-pointer">
-        <input type="file" id="fileInput" name="files" multiple accept=".xlsx, .xls" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
-        <span id="fileCount" class="block mt-2 text-xs text-slate-400">0 files selected</span>
+    <!-- Main Card -->
+    <div class="relative bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-800">
+      
+      <!-- Navigation Tabs -->
+      <div class="flex border-b border-gray-800 mb-6">
+        <button id="excelTab" onclick="switchMode('excel')" class="flex-1 py-2 font-semibold text-sm border-b-2 border-cyan-400 text-cyan-400 focus:outline-none transition drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
+          Excel Merger
+        </button>
+        <button id="pdfTab" onclick="switchMode('pdf')" class="flex-1 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-300 focus:outline-none transition">
+          PDF Merger
+        </button>
       </div>
-      <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition shadow">
-        Merge & Download
-      </button>
-    </form>
-    <div id="status" class="mt-4 text-center text-sm font-medium hidden"></div>
+
+      <h1 id="title" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-1 tracking-tight">Excel Sheet Merger</h1>
+      <p id="subtitle" class="text-xs text-gray-400 mb-6">Select multiple Excel (.xlsx) files to combine them into one.</p>
+
+      <form id="uploadForm" class="space-y-5">
+        <!-- Drag & Drop Zone -->
+        <div class="border-2 border-dashed border-gray-700 rounded-xl p-6 text-center hover:border-purple-500 transition duration-300 cursor-pointer bg-gray-800/40 group">
+          <input 
+            type="file" 
+            id="fileInput" 
+            name="files" 
+            multiple 
+            accept=".xlsx, .xls" 
+            class="block w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-gray-700 file:text-purple-400 hover:file:bg-gray-600 hover:file:text-purple-300 cursor-pointer transition" 
+          />
+          <span id="fileCount" class="block mt-3 text-xs text-gray-500 group-hover:text-gray-300 transition">0 files selected</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          id="submitBtn" 
+          class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-3 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(219,39,119,0.4)] transform hover:scale-[1.02]">
+          Merge & Download
+        </button>
+      </form>
+
+      <div id="status" class="mt-5 text-center text-sm font-bold hidden tracking-wide"></div>
+    </div>
   </div>
 
   <script>
     let currentMode = 'excel';
+    
+    // UI Elements
     const excelTab = document.getElementById('excelTab');
     const pdfTab = document.getElementById('pdfTab');
     const title = document.getElementById('title');
@@ -46,6 +69,13 @@
     const submitBtn = document.getElementById('submitBtn');
     const status = document.getElementById('status');
 
+    // Dynamic Tailwind Classes for Dark Theme Colors
+    const tabActiveExcel = "flex-1 py-2 font-semibold text-sm border-b-2 border-cyan-400 text-cyan-400 focus:outline-none transition drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]";
+    const tabActivePdf = "flex-1 py-2 font-semibold text-sm border-b-2 border-pink-400 text-pink-400 focus:outline-none transition drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]";
+    const tabInactive = "flex-1 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-300 focus:outline-none transition";
+    const titleExcel = "text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-1 tracking-tight";
+    const titlePdf = "text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 mb-1 tracking-tight";
+
     function switchMode(mode) {
       currentMode = mode;
       fileInput.value = '';
@@ -53,29 +83,37 @@
       status.classList.add('hidden');
 
       if (mode === 'excel') {
-        excelTab.className = "flex-1 py-2 font-semibold text-sm border-b-2 border-blue-600 text-blue-600 focus:outline-none transition";
-        pdfTab.className = "flex-1 py-2 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-none transition";
+        excelTab.className = tabActiveExcel;
+        pdfTab.className = tabInactive;
+        title.className = titleExcel;
         title.innerText = "Excel Sheet Merger";
         subtitle.innerText = "Select multiple Excel (.xlsx) files to combine them into one.";
         fileInput.accept = ".xlsx, .xls";
       } else {
-        pdfTab.className = "flex-1 py-2 font-semibold text-sm border-b-2 border-blue-600 text-blue-600 focus:outline-none transition";
-        excelTab.className = "flex-1 py-2 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-none transition";
+        pdfTab.className = tabActivePdf;
+        excelTab.className = tabInactive;
+        title.className = titlePdf;
         title.innerText = "PDF Document Merger";
         subtitle.innerText = "Select multiple PDF (.pdf) files to combine them into a single PDF.";
         fileInput.accept = ".pdf";
       }
     }
 
-    fileInput.addEventListener('change', () => { fileCount.innerText = `${fileInput.files.length} file(s) selected`; });
+    fileInput.addEventListener('change', () => { 
+      fileCount.innerText = `${fileInput.files.length} file(s) selected`; 
+      fileCount.classList.add('text-cyan-400');
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!fileInput.files.length) { alert("Please select at least one file."); return; }
+      if (!fileInput.files.length) { 
+        alert("Please select at least one file."); 
+        return; 
+      }
 
       submitBtn.disabled = true;
       submitBtn.innerText = "Processing files...";
-      status.className = "mt-4 text-center text-sm font-medium text-blue-600";
+      status.className = "mt-5 text-center text-sm font-bold text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]";
       status.innerText = "Merging files, please wait...";
       status.classList.remove("hidden");
 
@@ -88,6 +126,7 @@
       try {
         const response = await fetch(endpoint, { method: "POST", body: formData });
         if (!response.ok) throw new Error("Merge failed.");
+        
         const blob = await response.blob();
         const a = document.createElement("a");
         a.href = window.URL.createObjectURL(blob);
@@ -95,10 +134,11 @@
         document.body.appendChild(a);
         a.click();
         a.remove();
-        status.className = "mt-4 text-center text-sm font-medium text-emerald-600";
+        
+        status.className = "mt-5 text-center text-sm font-bold text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.8)]";
         status.innerText = "Done! Download started.";
       } catch (err) {
-        status.className = "mt-4 text-center text-sm font-medium text-rose-600";
+        status.className = "mt-5 text-center text-sm font-bold text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.8)]";
         status.innerText = "An error occurred during merging.";
       } finally {
         submitBtn.disabled = false;
