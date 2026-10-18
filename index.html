@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Excel Merger</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full border border-slate-200">
+    <h1 class="text-2xl font-bold text-slate-800 mb-2">100 Excel Merger</h1>
+    <p class="text-sm text-slate-500 mb-6">ഒന്നിലധികം Excel (.xlsx) ഫയലുകൾ ഒരുമിച്ച് തിരഞ്ഞെടുത്ത് ഒരൊറ്റ ഫയലായി സംയോജിപ്പിക്കുക.</p>
+
+    <form id="uploadForm" class="space-y-4">
+      <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-blue-500 transition cursor-pointer">
+        <input 
+          type="file" 
+          id="fileInput" 
+          name="files" 
+          multiple 
+          accept=".xlsx, .xls" 
+          class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" 
+        />
+        <span id="fileCount" class="block mt-2 text-xs text-slate-400">0 ഫയലുകൾ തിരഞ്ഞെടുത്തു</span>
+      </div>
+
+      <button 
+        type="submit" 
+        id="submitBtn" 
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition shadow">
+        Merge & Download
+      </button>
+    </form>
+
+    <div id="status" class="mt-4 text-center text-sm font-medium hidden"></div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const fileCount = document.getElementById('fileCount');
+    const form = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const status = document.getElementById('status');
+
+    fileInput.addEventListener('change', () => {
+      fileCount.innerText = `${fileInput.files.length} ഫയലുകൾ തിരഞ്ഞെടുത്തു`;
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!fileInput.files.length) {
+        alert("ദയവായി കുറഞ്ഞത് ഒരു Excel ഫയലെങ്കിലും തിരഞ്ഞെടുക്കുക.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "പ്രോസസ്സ് ചെയ്യുന്നു...";
+      status.className = "mt-4 text-center text-sm font-medium text-blue-600";
+      status.innerText = "ഫയലുകൾ സംയോജിപ്പിക്കുന്നു, കാത്തിരിക്കുക...";
+      status.classList.remove("hidden");
+
+      const formData = new FormData();
+      for (const file of fileInput.files) {
+        formData.append("files", file);
+      }
+
+      try {
+        const response = await fetch("/merge", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) throw new Error("Merge failed.");
+
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = "merged_output.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        status.className = "mt-4 text-center text-sm font-medium text-emerald-600";
+        status.innerText = "വിജയകരമായി പൂർത്തിയായി! ഡൗൺലോഡ് ആരംഭിച്ചു.";
+      } catch (err) {
+        status.className = "mt-4 text-center text-sm font-medium text-rose-600";
+        status.innerText = "ഫയലുകൾ സംയോജിപ്പിക്കുന്നതിൽ തകരാർ സംഭവിച്ചു.";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Merge & Download";
+      }
+    });
+  </script>
+</body>
+</html>
